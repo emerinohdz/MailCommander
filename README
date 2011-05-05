@@ -14,7 +14,7 @@ New commands may be added by placing them under the "cmds" folder
 as python modules, and each command should extend the Command class.
 This way, the code remains the same while being scalable.
 
-Each command may return either text or html output after being
+Each command may return text or html output after being
 executed, and this output will be sent to the person that
 requested the command as well as to every user that is responsable
 for authorizing it. The output by default is generated using
@@ -25,7 +25,9 @@ like adding new accounts or changing passwords on existing ones,
 it uses MySQLdb and it's based on postfixadmin's db schema.
 
 It's been tested under Postfix, but other MTAs should work as long 
-as they allow setting custom transports for specific domains.
+as they allow setting custom transports for specific domains. YOU
+DON'T NEED AN MTA TO USE/TEST THIS (although it's meant to be used
+by one).
 
 
 REQUERIMENTS:
