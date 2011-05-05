@@ -59,10 +59,13 @@ class Command:
                 raise Exception("Se necesita la plantilla de texto!")
 
             self.__output = {}
-            self.__output["text"] = unicode(Template(file=self.text_template, searchList=[self.__output_data]))
+            self.__output["text"] = unicode(Template(file=self.text_template, \
+                                            searchList=[self.__output_data]))
 
             if self.html_template:
-                self.__output["html"] = unicode(Template(file=self.html_template, searchList=[self.__output_data]))
+                self.__output["html"] = unicode(Template(\
+                                                file=self.html_template, \
+                                                searchList=[self.__output_data]))
             else:
                 self.__output["html"] = None
 
@@ -70,7 +73,8 @@ class Command:
 
     def __get_parser(self):
         if not self.__parser:
-            self.__parser = CommanderParser(account_fields=self.parser_account_fields)
+            self.__parser = CommanderParser(\
+                            account_fields=self.parser_account_fields)
 
         return self.__parser
 
