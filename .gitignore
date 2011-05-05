@@ -1,2 +1,5 @@
 # Ignore .pyc files
 *.pyc
+
+# Ignore .swo files
+*.swo
