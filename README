@@ -1,0 +1,34 @@
+MailCommander is an interface to execute remote commands using the 
+infrastructure of an MTA. It does so by parsing the data received
+in the body of the email and fetching the command from either
+the recipient of the email or the subject. 
+
+It includes an authentication/authorization module, so commands can
+be validated first before actually executing them. 
+
+It should be called passing the ip address of the person that 
+requests the command as an argument, and the email address should
+be passed through stdin.
+
+New commands may be added by placing them under the "cmds" folder
+as python modules, and each command should extend the Command class.
+This way, the code remains the same while being scalable.
+
+Each command may return either text or html output after being
+executed, and this output will be sent to the person that
+requested the command as well as to every user that is responsable
+for authorizing it. The output by default is generated using
+Cheetah templates, although this behaviour might be overriden.
+
+The current implementation includes commands for account handling
+like adding new accounts or changing passwords on existing ones,
+it uses MySQLdb and it's based on postfixadmin's db schema.
+
+It's been tested under Postfix, but other MTAs should work as long 
+as they allow setting custom transports for specific domains.
+
+
+REQUERIMENTS:
+
+-> Existing MTA (e.g. postfix)
+-> Cheetah templates http://www.cheetahtemplate.org
