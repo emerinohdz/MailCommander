@@ -1,0 +1,30 @@
+Return-Path: <sysadmin@refacil.com.mx>
+Delivered-To: migrador@refacil.com.mx
+Received: from [10.2.0.37] (unknown [10.2.0.37])
+	by hermes2.refacil.com.mx (Postfix) with ESMTP id 7C9DD3A1075D
+	for <migrador@refacil.com.mx>; Thu, 14 Apr 2011 13:58:28 -0500 (CDT)
+Message-ID: <4DA743F4.8030101@refacil.com.mx>
+Date: Thu, 14 Apr 2011 13:59:00 -0500
+From: =?ISO-8859-1?Q?Edgar_Iv=E1n?= <sysadmin@refacil.com.mx>
+User-Agent: Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.2.15) Gecko/20110307 Lanikai/3.1.9
+MIME-Version: 1.0
+To: migrador <altas@auto.mail.intranet>
+Subject: Test MailCommander2 iso-8859-1
+Content-Type: text/plain; charset=ISO-8859-1; format=flowed
+Content-Transfer-Encoding: 7bit
+X-peredo-MailScanner-Information: Para mas informacion, contacte al departamento de sistemas: sysadmin@etesa.com.mx
+X-peredo-MailScanner-ID: 7C9DD3A1075D.AB0D5
+X-peredo-MailScanner: Found to be clean
+X-peredo-MailScanner-From: sysadmin@refacil.com.mx
+X-Spam-Status: No
+
+<%
+
+ETESA
+nombre
+puesto
+sucursal
+test@etesa.com.mx
+-
+
+%>

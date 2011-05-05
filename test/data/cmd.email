@@ -1,0 +1,29 @@
+Return-Path: <supercorreo@auto.mail.intranet>
+Delivered-To: migrador@refacil.com.mx
+Received: from localhost.localdomain (hermes2 [127.0.0.1])
+	by hermes2.refacil.com.mx (Postfix) with ESMTP id 7A49E3A10754
+	for <migrador@refacil.com.mx>; Thu, 14 Apr 2011 19:24:39 -0500 (CDT)
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+subject: =?utf-8?q?altas?=
+from: migrador@refacil.com.mx
+to: supercorreo@auto.mail.intranet
+Message-Id: <20110415002439.7A49E3A10754@hermes2.refacil.com.mx>
+Date: Thu, 14 Apr 2011 19:24:39 -0500 (CDT)
+
+<%
+REPLY-TO: Edgar Iv=C3=A1n <sysadmin@refacil.com.mx> =
+
+SUBJECT: Test MailCommander2 iso-8859-1 =
+
+
+
+ETESA
+nombre
+puesto
+sucursal
+test@etesa.com.mx
+-
+
+%>

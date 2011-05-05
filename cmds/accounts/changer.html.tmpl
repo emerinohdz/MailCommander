@@ -1,0 +1,53 @@
+#encoding UTF-8
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="content-type">
+<title></title>
+</head>
+<body>
+<h3 style="font-family: Microsoft Sans Serif;"><span
+style="font-weight: bold;">Contraseñas actualizadas:
+$len($accepted_accounts)/$len($accounts)</span></h3>
+<br>
+#if len($declined_accounts) > 0 and len($accepted_accounts) > 0
+<span style="font-family: MS Sans Serif; font-weight: bold;">AUTORIZADAS:</span><br>
+<br>
+#end if
+#for $account in $accepted_accounts
+<span style="font-family: MS Sans Serif;">---------------------------------------------------------------------</span><br
+style="font-family: MS Sans Serif;">
+<span style="font-family: MS Sans Serif;">Cuenta: $account.email_address</span><br
+style="font-family: MS Sans Serif;">
+<span style="font-family: MS Sans Serif;">Contraseña: $account.password</span><br
+style="font-family: MS Sans Serif;">
+<span style="font-family: MS Sans Serif;">---------------------------------------------------------------------</span><br>
+<br>
+#end for
+#if len($declined_accounts) > 0
+<span style="font-family: MS Sans Serif; font-weight: bold;">NO
+AUTORIZADAS (no existe la cuenta):</span><br>
+<br>
+#for $account in $declined_accounts
+<span style="font-family: MS Sans Serif;">---------------------------------------------------------------------</span><br
+style="font-family: MS Sans Serif;">
+<span style="font-family: MS Sans Serif;">Cuenta: $account.email_address</span><br
+style="font-family: MS Sans Serif;">
+<span style="font-family: MS Sans Serif;">---------------------------------------------------------------------</span><br>
+<br>
+#end for
+#end if
+<br>
+<span style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">--</span><br
+style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">
+<span style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">Departamento
+de sistemas operativos.</span><br
+style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">
+<span style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">Tel.
+01 (228) 841-70-00 Ext. 6651, 6652</span><br
+style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">
+<span style="color: rgb(161, 161, 161); font-family: MS Sans Serif;">sysadmin@etesa.com.mx</span><br>
+<br>
+</body>
+</html>
+
+

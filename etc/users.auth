@@ -1,0 +1,6 @@
+# cmd       email                         ip               hashkey (md5 sum)
+
+#altas       migrador@refacil.com.mx       10.2.0.37        6dc8da29c541ef38a9b9a99944f19af2
+altas       migrador@refacil.com.mx       10.2.0.37        *
+
+password    migrador@refacil.com.mx       10.2.0.37        *

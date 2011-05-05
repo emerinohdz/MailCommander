@@ -1,0 +1,29 @@
+#encoding UTF-8
+Cuentas dadas de alta: $len($accepted_accounts)/$len($accounts)
+
+#if len($declined_accounts) > 0 and len($accepted_accounts) > 0
+AUTORIZADAS:
+
+#end if
+#for $account in $accepted_accounts
+---------------------------------------------------------------------
+Cuenta: $account.email_address
+Contraseña: $account.password
+---------------------------------------------------------------------
+
+#end for
+#if len($declined_accounts) > 0
+NO AUTORIZADAS (la cuenta ya existe):
+
+#for $account in $declined_accounts
+---------------------------------------------------------------------
+Cuenta: $account.email_address
+---------------------------------------------------------------------
+
+#end for
+#end if
+
+--
+Departamento de sistemas operativos.
+Tel. 01 (228) 841-70-00 Ext. 6651, 6652
+sysadmin@etesa.com.mx
