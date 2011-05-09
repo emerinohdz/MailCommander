@@ -18,7 +18,7 @@
 # DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE, EVEN IF
 # ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-__version__ = "0.5"
+__version__ = "0.1"
 __author__ = "emerino <emerino at gmail dot com>"
 
 
@@ -103,19 +103,46 @@ class CommanderException(Exception):
         self.cmd_id = cmd_id
         self.email = email
 
-class MailCommander:
+from auth import AuthManager, AuthKey, PUBLIC_KEY
+
+class AuthException(Exception):
+    pass
+
+class Commander:
+
+    def __init__(self, auth):
+        self.__auth = auth
+
+    def execute(self, command, auth_key=PUBLIC_KEY, data=None):
+        auth = self.__auth
+
+        # Verifica si el usuario está autorizado para ejecutar el comando
+        if auth.authorized(command, auth_key):
+            output = command.execute(data)
+        else:
+            raise AuthException("User not authorized to execute command")
+
+        return output
+
+# TODO: Debe haber una clase que devuelva los datos necesarios a partir
+# del correo electrónico recibido, los cuales se utilizarán para ejecutar
+# el comando utilizando la clase Commander
+class MailCommander():
 
     def __init__(self, conf, auth):
-        self.__auth = auth
+        self.__commander = Commander(auth)
         self.__conf = conf
 
     def run(self, email_source, user_ip):
         conf = self.__conf
-        auth = self.__auth
+        commander = self.__commander
         email = UnicodeParser().parsestr(email_source)
 
         command = self.__get_command(email)
 
+        # TODO: Archivo de configuración para comandos,
+        # así no es necesario extender directamente
+        # el API Commander.
         try:
             parser = command.parser
             data = parser.parse(unicode_email_body(email))
@@ -128,13 +155,10 @@ class MailCommander:
 
         user_address = extract_address(email["from"])
         user_hashkey = self.__extract_auth_key(data)
+        auth_key = AuthKey(user_address, user_hashkey)
 
-        # Verifica si el usuario está autorizado para ejecutar el comando
-        if auth.authorized(command.id, user_address, user_ip, user_hashkey):
-            try:
-                command.execute(data)
-            except Exception, err:
-                raise CommanderException(str(err), command.id, email)
+        try:
+            commander.execute(command, auth_key, data)
 
             recipients = [ key.email for key in \
                            auth.valid_keys(command.id) \
@@ -147,13 +171,14 @@ class MailCommander:
             self.__send_cmd_notifications(msg_subject, msg_from, \
                                           msg_to, command.output["text"], \
                                           command.output["html"], recipients)
-
-        # Envía notificaciones de autorización
-        else:
+        except AuthException, err:
+            # Envía notificaciones de autorización
             keys = [ key for key in auth.valid_keys(command.id) \
                      if key.email != "*"]
 
             self.__send_auth_notifications(email, conf["auth_sender"], keys)
+        except Exception, err:
+            raise CommanderException(str(err), command.id, email)
 
     def __get_command(self, email):
         commands = find_commands(os.path.dirname(__file__), "cmds/")
