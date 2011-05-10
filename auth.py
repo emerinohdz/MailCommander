@@ -62,4 +62,3 @@ class AuthManager:
 
     def __cmd_is_public(self, cmd):
         return self.keys[cmd][0] == PUBLIC_KEY
-
