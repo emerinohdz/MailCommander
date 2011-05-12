@@ -41,7 +41,7 @@ class Commander:
     def __init__(self, auth):
         self.__auth = auth
 
-    def execute(self, command, authkey=PUBLIC_KEY, data=None):
+    def execute(self, command, data=None, authkey=PUBLIC_KEY):
         auth = self.__auth
 
         # Verifica si el usuario está autorizado para ejecutar el comando

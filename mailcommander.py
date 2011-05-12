@@ -27,12 +27,17 @@ import os
 import re
 import logging
 
+from email.mime.multipart import MIMEMultipart
+from email.mime.message import MIMEMessage
+
 from Cheetah.Template import Template
+from devpower.mail import mime_message, dovecot_deliver as sendmail
 from devpower.util import Properties
 
-from commands import Command
 from auth import AuthManager, AuthKey, PUBLIC_KEY
-from util import find_commands, str_to_class
+from scanner import MailScanner, ScannerException
+from parser import ParserException
+from util import find_commands
 
 def main():
     cwd = os.getcwd() + "/"
@@ -47,133 +52,51 @@ def main():
     auth = AuthManager(cwd + "etc/users.auth")
     conf = Properties(cwd + "etc/commander.conf")
     
-    commands = find_commands(cwd, "cmds")
+    commands = find_commands("cmds/")
 
     commander = Commander(auth)
+    scanner = MailScanner(Parsers(commands))
     notifier = Notifier(auth, conf)
-    extractor = MailExtractor()
 
     email = sys.stdin.read()
 
     try:
-        cmd_id, authkey, data = extractor.extract(email)
+        cmd_id, data, authkey = scanner.scan(email)
+        output = commander.execute(commands[cmd_id], data, authkey)
 
-        if cmd_id in commands:
-            output = commander.execute(command, authkey, data)
-
-            if output:
-                notifier.send_success(command, data)
-        else:
-            logging.error(str(err))
-            notifier.send_error(cmd_id, email, str(err))
+        if output:
+            notifier.send_success(command, data)
     except AuthException, err:
         # Send auth notifications
         notifier.send_auth(err.command, email)
-    except ExtractorException, err:
+    except ScannerException, err:
         logging.error(str(err))
         notifier.send_error(err.cmd_id, email, str(err))
     except Exception, err:
         logging.error(str(err))
 
-class MailCommand:
-"""
-This class wraps a command to easily find its parser and
-output templates, without modifying the Commands API
-"""
+class Parsers(dict):
+    """
+    This dictionary is responsable for handling parsers for each command,
+    and it's needed by the MailExtractor class. It is handled in a
+    class so that parsers can be loaded at runtime instead of loading
+    them all at once.
+    """
 
-    def __init__(self, command, cwd):
-        self.__command = command
-        self.__cwd = cwd
-
-        self.__conf = None
-        self.__parser = None
-        self.__output_data = None
-        self.__output = None
-
-    def execute(self, data)
-        self.__output_data = self.__command.execute(data)
-
-        return self.__output_data
-
-    def __get_conf(self):
-        if self.__conf:
-            return self.__conf
-
-        self.__conf = {}
-
-        for root, dirs, files in os.walk(cwd):
-            for name in files:
-                if name == "command.conf":
-                    props = Properties(root + "/" + name)
-                    
-                    for k, v in props.items():
-                        parts = k.split(".")
-                        cmd = parts[0]
-                        option = '.'.join(parts[1:])
-
-                        if cmd == self.__command.id:
-                            self.__conf[option] = v
-
-        return self.__conf
-
-    def __get_parser(self):
-        if self.__parser:
-            return self.__parser
-
-        if "parser" in self.conf:
-            parser = str_to_class(root, DataParser, self.conf["parser"])()
-        else:
-            parser = PropertiesParser()
-
-        options_regex = re.compile("^parser\.options\.(\w+)$")
-
-        for key, value in self.conf.items():
-            match = options_regex.search(key)
-
-            if match:
-                if not parser.options:
-                    parser.options = {}
-
-                opt = match.group(1)
-                parser.options[opt] = value
-
-        self.__parser = parser
-
-        return parser
-
-    def __get_output(self):
-        if self.__output_data and len(self.__output_data) > 0:
-            if "text_template" not in self.conf:
-                raise Exception("Se necesita la plantilla de texto!")
-
-            self.__output = {}
-            text = Template(file=self.__cwd + "/" + self.conf["text_template"],
-                            searchList=[self.__output_data])
-
-            self.__output["text"] = unicode(text)
-
-            if "html_template" in self.conf:
-                html_file = self.__cwd + "/" + self.conf["html_template"]
-                html = Template(file=html_file,searchList=[self.__output_data])
-
-                self.__output["html"] = unicode(html)
-            else:
-                self.__output["html"] = None
-
-        return self.__output
+    def __init__(self, commands):
+        self.__commands = commands
 
     def __getattr__(self, attr):
-        return getattr(self.__command, attr)
+        if attr not in self.__commands:
+            raise Exception("Command has no parser registered: %s" % (attr))
 
-    conf = property(__get_conf)
-    parser = property(__get_parser)
-    output = property(__get_output)
+        return self.__commands[attr].parser
 
 class Notifier:
-"""
-This class is responsable for sending the required notifications
-to the required users.
-"""
+    """
+    This class is responsable for sending the required notifications
+    to the required users.
+    """
     
     def __init__(self, conf, auth):
         self.__conf = conf
@@ -200,7 +123,7 @@ to the required users.
             sendmail(msg)
         
 
-    def send_auth(self, command, email)
+    def send_auth(self, command, email):
         conf = self.__conf
         auth = self.__auth
 

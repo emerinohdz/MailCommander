@@ -4,11 +4,12 @@ from hashlib import md5
 
 class AuthKey:
 
-    def __init__(self, user, hashkey):
+    def __init__(self, user, hashkey, md5sum=True):
         self.user = user
 
-        if hashkey:
+        if hashkey and md5sum:
             self.hashkey = md5(hashkey).hexdigest()
+#            print self.hashkey
         else:
             self.hashkey = hashkey
 
@@ -46,7 +47,7 @@ class AuthManager:
                 if cmd not in self.keys:
                     self.keys[cmd] = []
 
-                self.keys[cmd].append(AuthKey(user, hashkey))
+                self.keys[cmd].append(AuthKey(user, hashkey, False))
         
     def authorized(self, cmd, auth_key):
         if cmd.id not in self.keys:

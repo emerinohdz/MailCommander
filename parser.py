@@ -2,14 +2,17 @@
 
 import re
 
+class ParserException(Exception):
+    pass
+
 class DataParser:
 
     def __init__(self, begin_delimiter="<%", end_delimiter="%>"):
         if end_delimiter and not begin_delimiter:
-            raise Exception("begin_delimiter missing")
+            raise ParserException("begin_delimiter missing")
 
         if begin_delimiter and not end_delimiter:
-            raise Exception("end_delimiter missing")
+            raise ParserException("end_delimiter missing")
 
         self.begin_delimiter = begin_delimiter
         self.end_delimiter = end_delimiter
@@ -43,7 +46,7 @@ class DataParser:
         end_count = lines.count("%>")
 
         if begin_count > 1 or end_count > 1:
-            raise Exception("Wrong number of delimiters provided")
+            raise ParserException("Wrong number of delimiters provided")
 
     def __remove_reply_quotes(self, line):
         match = re.search("^>+", line)
@@ -90,8 +93,8 @@ class PropertiesParser(DataParser):
 
                 read_lines += 1
             else:
-                raise Exception("Invalid sintax at line %d: %s" \
-                                 % (read_lines, line))
+                raise ParserException("Invalid sintax at line %d: %s" \
+                                       % (read_lines, line))
 
         return data
 

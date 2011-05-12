@@ -1,33 +1,38 @@
 # coding: utf-8
 
-from email.mime.multipart import MIMEMultipart
-from email.mime.message import MIMEMessage
+import re
 
-from devpower.mail import UnicodeParser, unicode_email_body, \
-                          mime_message, extract_address, \
-                          dovecot_deliver as sendmail
+from devpower.mail import UnicodeParser, unicode_email_body, extract_address
+from auth import AuthKey
 
-from parser import DataParser, PropertiesParser
-
-class ExtractorException(Exception):
+class ScannerException(Exception):
     def __init__(self, msg, cmd_id):
         Exception.__init__(self, msg)
 
         self.cmd_id = cmd_id
 
-class MailExtractor:
+class MailScanner:
     """
     Extract command id and its associated data from an email source
     """
 
-    def extract(self, email_source):
+    def __init__(self, parsers=None):
+        self.__parsers = parsers
+
+    def scan(self, email_source, parser):
+        if not email_source:
+            raise ScannerException("Email source is missing")
+
+        if not parser:
+            raise ScannerException("Parser is missing")
+
         email = UnicodeParser().parsestr(email_source)
         
         cmd_id = self.__get_command_id(email)
-        data = self.__get_data(command, email)
-        authkey = self.__authkey(email, data)
+        data = self.__get_data(cmd_id, email, parser)
+        authkey = self.__get_authkey(email, data)
 
-        return cmd_id, authkey, data
+        return cmd_id, data, authkey
 
     def __get_command_id(self, email):
         cmd_id = None
@@ -35,7 +40,7 @@ class MailExtractor:
         # Buscamos en el asunto del correo
         email_subject = email["subject"].lower().lstrip().rstrip()
 
-        subject_regex = "^(\w+:\s*)?@CMD:\s?(\w+).*$"
+        subject_regex = "^(\w+:\s*)*@cmd:\s?(\w+)$"
         match = re.search(subject_regex, email_subject)
 
         if match:
@@ -48,14 +53,21 @@ class MailExtractor:
 
         return cmd_id
 
-    def __get_data(self, command, email):
-        parser = command.parser
+    def __get_data(self, cmd_id, email, parser):
+        if not parser:
+            if self.__parsers:
+                parser = self.__parsers[cmd_id]
+            else:
+                raise ScannerException("Don't know how to parse data")
 
-        data = parser.parse(unicode_email_body(email))
+        try:
+            data = parser.parse(unicode_email_body(email))
+        except ParserException, err:
+            raise ScannerException(err, cmd_id)
 
         if len(data) == 0:
-            raise ExtractorException("No hay datos para el comando '%s'" \
-                                      % self.command.id, self.command.id)
+            raise ScannerException("No hay datos para el comando '%s'" \
+                                      % self.command.id)
 
         return data
 

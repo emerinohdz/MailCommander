@@ -20,7 +20,7 @@
 #    lo cual hace aún más flexible esta implementación.
 
 
-from parser import Parser
+from parser import PropertiesParser
 
 email_body = """
 Texto que no sirve para aplicación puede ir en el correo
@@ -45,9 +45,9 @@ CoMPOnentES: Todos
 %>
 """
 
-parser = Parser()
+parser = PropertiesParser()
 data = parser.parse(email_body)
 
-for key, value in data[0].items():
+for key, value in data.items():
     print "%s: %s" % (key, value)
 

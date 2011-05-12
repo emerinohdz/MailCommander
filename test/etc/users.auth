@@ -1,0 +1,11 @@
+# This is the authorization file.
+# 
+# For each field that should be ommited place an asterisk as its value.
+# 
+# To make a command public, place an asterisk for each field:
+#
+# mycmd		*							  *				   *
+
+# cmd       email                         hashkey (md5 sum)
+
+test        *                             6dc8da29c541ef38a9b9a99944f19af2
