@@ -3,3 +3,6 @@
 
 # Ignore .swo files
 *.swo
+
+# Ignore .swp files
+*.swp
