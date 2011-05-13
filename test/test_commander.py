@@ -24,7 +24,7 @@ class TestCommander(unittest.TestCase):
 
     def test_exec(self):
         auth = AuthManager("test/etc/users.auth")
-        authkey = AuthKey(None, "7rus7.me")
+        authkey = AuthKey(None, "my.pass")
 
         commander = Commander(auth)
         

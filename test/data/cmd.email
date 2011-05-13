@@ -7,13 +7,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 subject: @CMD: test
-from: migrador@refacil.com.mx
+from: testuser@example.com
 to: supercorreo@auto.mail.intranet
 Message-Id: <20110415002439.7A49E3A10754@hermes2.refacil.com.mx>
 Date: Thu, 14 Apr 2011 19:24:39 -0500 (CDT)
 
 <%
 REPLY-TO: Edgar Iv=C3=A1n <sysadmin@refacil.com.mx> =
+
+AUTH-KEY: my.pass
 
 SUBJECT: Test MailCommander2 iso-8859-1 =
 

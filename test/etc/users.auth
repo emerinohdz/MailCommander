@@ -8,4 +8,5 @@
 
 # cmd       email                         hashkey (md5 sum)
 
-test        *                             6dc8da29c541ef38a9b9a99944f19af2
+#test        *                             e5b11240c1aca6cf68f2300e69ff4f8c
+test        testuser@example.com          e5b11240c1aca6cf68f2300e69ff4f8c
