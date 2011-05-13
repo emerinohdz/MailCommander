@@ -9,23 +9,35 @@ class AuthKey:
 
         if hashkey and md5sum:
             self.hashkey = md5(hashkey).hexdigest()
-#            print self.hashkey
         else:
             self.hashkey = hashkey
 
     def __eq__(self, other):
-        return self.user == other.user and self.hashkey == other.hashkey
+        if self.user != PUBLIC_ITEM and other.user != PUBLIC_ITEM and \
+                self.user != other.user:
+
+            return False
+
+        if self.hashkey != PUBLIC_ITEM and other.user != PUBLIC_ITEM and \
+                self.hashkey != other.hashkey:
+
+            return False
+
+        return True
 
     def items(self):
         return self.user, self.hashkey
 
+class PublicItem():
+    pass
+
+PUBLIC_ITEM = PublicItem()
 PUBLIC_KEY = AuthKey(None, None)
 
 class AuthManager:
 
     def __init__(self, auth_file):
         self.keys = {}
-        self.admins = set()
         
         for line in open(auth_file, "r"):
             # Ignora comentarios
@@ -39,10 +51,10 @@ class AuthManager:
                 cmd, user, hashkey = parts
 
                 if user == "*":
-                    user = None
+                    user = PUBLIC_ITEM
 
                 if hashkey == "*":
-                    hashkey = None
+                    hashkey = PUBLIC_ITEM
 
                 if cmd not in self.keys:
                     self.keys[cmd] = []
@@ -50,16 +62,13 @@ class AuthManager:
                 self.keys[cmd].append(AuthKey(user, hashkey, False))
         
     def authorized(self, cmd, auth_key):
-        if cmd.id not in self.keys:
+        if cmd not in self.keys:
             raise Exception(\
                   "No se registró ningún usuario para el comando: %s" % (cmd))
 
-        if self.__cmd_is_public(cmd.id):
-            return True
-        else:
-            for key in self.keys[cmd.id]:
-                if key == auth_key:
-                    return True
+        for key in self.keys[cmd]:
+            if key == auth_key:
+                return True
 
-    def __cmd_is_public(self, cmd):
-        return self.keys[cmd][0] == PUBLIC_KEY
+        return False
+
