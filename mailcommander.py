@@ -1,4 +1,4 @@
-#!/usr/bin/env python26
+#!/usr/bin/env python2
 # coding: utf-8
 #
 # Copyright (C) 2011 by Edgar Merino (http://devio.us/~emerino)
@@ -25,10 +25,11 @@ __author__ = "emerino <emerino at gmail dot com>"
 import sys
 import os
 import logging
+import getopt
 
 from auth import AuthManager, AuthKey, PUBLIC_KEY
 from scanner import MailScanner, ScannerException
-from parser import ParserException
+from commander import Commander, AuthException
 from notifications import Notifier
 from util import Properties, Parsers, find_commands
 
@@ -42,15 +43,13 @@ def main():
 
         # Send logging output to a file if specified
         if conf["log.file"]:
-            configure_log(conf["log_file"])
-
-        # Init the auth manager
-        auth = AuthManager(conf["home.dir"] + "/users.auth")
+            configure_log(conf["log.file"])
 
         # Look for available commands
         commands = find_commands("cmds/")
 
         # Core components
+        auth = AuthManager(conf["home.dir"] + "/users.auth")
         commander = Commander(auth)
         scanner = MailScanner(Parsers(commands))
         notifier = Notifier(conf, auth.keys)
@@ -59,7 +58,8 @@ def main():
         email = sys.stdin.read()
 
         cmd_id, data, authkey = scanner.scan(email)
-        output = commander.execute(commands[cmd_id], data, authkey)
+        command = commands[cmd_id]
+        output = commander.execute(command, data, authkey)
 
         if output:
             notifier.send_success(command, data)
@@ -71,6 +71,7 @@ def main():
         notifier.send_error(err.cmd_id, email, str(err))
     except Exception, err:
         logging.error(str(err))
+        usage()
 
 def usage():
     print """
@@ -78,11 +79,10 @@ Usage: mailcommander.py <options>
 
 Available options:
     -c, --config        path to configuration file 
-                            default: /etc/MailCommander/commander.conf
+                        default: /etc/MailCommander/commander.conf
     -h, --help          show this message
 
-The email source should be passed through stdin.
-    """
+The email source should be passed through stdin.  """
 
 def parse_arguments():
     short_opts = "c:h"
@@ -105,7 +105,7 @@ def parse_arguments():
     opts, args = getopt.getopt(sys.argv[1:], short_opts, long_opts)
 
     for opt, arg in opts:
-        if opt == "--help":
+        if opt in ("--help", "-h"):
             usage()
             sys.exit(0) # =(
         elif opt in ("--config", "-c"):
@@ -119,7 +119,7 @@ def parse_arguments():
             config[opt] = value
 
     if not os.path.exists(config["home.dir"]):
-        raise Exception("home dir '%s' does not exist!" % (conf["home.dir"]))
+        raise Exception("home dir '%s' does not exist!" % (config["home.dir"]))
     elif config["home.dir"][-1] == "/":
         config["home.dir"] = config["home.dir"][:-1]
 
