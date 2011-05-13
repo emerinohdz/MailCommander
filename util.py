@@ -89,10 +89,10 @@ class Properties(dict):
     def __init__(self, file=None, separator=None):
         dict.__init__(self)
 
+        self.separator = separator
+
         if file:
             self.__parse(file)
-
-        self.separator = separator
 
     def __parse(self, file):
         count = 0
@@ -113,11 +113,11 @@ class Properties(dict):
 
                 self[key] = value
 
-    def __getitem__(self, key):
+    def __setitem__(self, key, value):
         if self.separator:
-            key = key.replace(self.separator, " ")
+            key = key.replace(" ", self.separator)
 
-        return dict.__getitem__(self, key)
+        dict.__setitem__(self, key, value)
 
 class Parsers(dict):
     """
