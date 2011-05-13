@@ -45,7 +45,7 @@ class Commander:
         auth = self.__auth
 
         # Verifica si el usuario está autorizado para ejecutar el comando
-        if auth.authorized(command, authkey):
+        if auth.authorized(command.id, authkey):
             output = command.execute(data)
         else:
             raise AuthException("User not authorized to execute command", command)
