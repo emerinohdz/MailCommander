@@ -19,12 +19,9 @@ class MailScanner:
     def __init__(self, parsers=None):
         self.__parsers = parsers
 
-    def scan(self, email_source, parser):
+    def scan(self, email_source, parser=None):
         if not email_source:
-            raise ScannerException("Email source is missing")
-
-        if not parser:
-            raise ScannerException("Parser is missing")
+            raise Exception("Email source is missing")
 
         email = UnicodeParser().parsestr(email_source)
         
@@ -55,10 +52,10 @@ class MailScanner:
 
     def __get_data(self, cmd_id, email, parser):
         if not parser:
-            if self.__parsers:
+            if self.__parsers != None:
                 parser = self.__parsers[cmd_id]
             else:
-                raise ScannerException("Don't know how to parse data")
+                raise ScannerException("Don't know how to parse data", cmd_id)
 
         try:
             data = parser.parse(unicode_email_body(email))
@@ -67,7 +64,7 @@ class MailScanner:
 
         if len(data) == 0:
             raise ScannerException("No hay datos para el comando '%s'" \
-                                      % self.command.id)
+                                      % (cmd_id), cmd_id)
 
         return data
 
@@ -81,7 +78,10 @@ class MailScanner:
 
     def __extract_hashkey(self, data):
         if "auth-key" in data:
-            return data["auth-key"].strip()
+            authkey = data["auth-key"].strip()
+            del(data["auth-key"])
+
+            return authkey
 
         return None
 
