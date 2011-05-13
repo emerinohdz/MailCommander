@@ -84,3 +84,57 @@ def find_commands(relative_path):
 
     return commands
 
+class Properties(dict):
+
+    def __init__(self, file=None, separator=None):
+        dict.__init__(self)
+
+        if file:
+            self.__parse(file)
+
+        self.separator = separator
+
+    def __parse(self, file):
+        count = 0
+
+        for line in open(file, "r"):
+            count += 1
+
+            # Ignora comentarios
+            if len(line.strip()) > 0 and line.lstrip()[:1] != "#":
+                parts = line.split("=")
+
+                if len(parts) != 2:
+                    raise Exception("Invalid syntax at line %d: %s" \
+                                    % (count, line))
+
+                key = parts[0].lstrip().rstrip()
+                value = parts[1].lstrip().rstrip()
+
+                self[key] = value
+
+    def __getitem__(self, key):
+        if self.separator:
+            key = key.replace(self.separator, " ")
+
+        return dict.__getitem__(self, key)
+
+class Parsers(dict):
+    """
+    This dictionary is responsable for handling parsers for each command,
+    and it's needed by the MailExtractor class. It is handled in a
+    class so that parsers can be loaded at runtime instead of loading
+    them all at once.
+    """
+
+    def __init__(self, commands):
+        dict.__init__(self)
+
+        self.__commands = commands
+
+    def __getitem__(self, attr):
+        if attr not in self.__commands:
+            raise Exception("Command has no parser registered: %s" % (attr))
+
+        return self.__commands[attr].parser
+
