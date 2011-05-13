@@ -60,6 +60,7 @@ class DataParser:
     def parse(self, text):
         raise NotImplementedError
 
+# TODO: Support repeated properties
 class PropertiesParser(DataParser):
     """
     This parser recognized a simple key:value pair property sintax:
