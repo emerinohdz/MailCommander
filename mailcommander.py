@@ -27,11 +27,14 @@ import os
 import logging
 import getopt
 
+from devpower.mail import UnicodeParser
+
 from auth import AuthManager, AuthKey, PUBLIC_KEY
 from scanner import MailScanner, ScannerException
 from commander import Commander, AuthException
-from notifications import Notifier
-from util import Properties, Parsers, find_commands
+from notifications import EmailNotifier
+from util import Properties, Parsers, find_commands, \
+                 AuthoNotification, SuccessNotification
 
 def main():
     # Cofigure the system log
@@ -52,23 +55,27 @@ def main():
         auth = AuthManager(conf["home.dir"] + "/users.auth")
         commander = Commander(auth)
         scanner = MailScanner(Parsers(commands))
-        notifier = Notifier(conf, auth.keys)
+        notifier = EmailNotifier(conf["smtp.host"], conf["smtp.port"])
 
         # Read the email from stdin
-        email = sys.stdin.read()
+        email = UnicodeParser().parse(sys.stdin)
 
-        cmd_id, data, authkey = scanner.scan(email)
+        cmd_id, data, sprops, authkey = scanner.scan(email)
+        auth_users = [ key.user for key in auth.keys[cmd_id] if key.user ]
+
         command = commands[cmd_id]
         output = commander.execute(command, data, authkey)
 
         if output:
-            notifier.send_success(command, data)
+            notifier.send(SuccessNotification(conf["notification.sender"], \
+                                              auth_users, command, sprops))
     except AuthException, err:
-        # Send auth notifications
-        notifier.send_auth(err.command, email)
+        notifier.send(AuthNotification(cmd_id, conf["commander.address"], \
+                                       auth_users, email, data)
     except ScannerException, err:
         logging.error(str(err))
-        notifier.send_error(err.cmd_id, email, str(err))
+        sys.stderr.write(str(err))
+        sys.exit(1) # Exit with err code 1 so the email is bounced
     except Exception, err:
         logging.error(str(err))
         usage()
@@ -97,8 +104,10 @@ def parse_arguments():
     default_config = { # defaults
         "home.dir": "/etc/MailCommander",
         "lang": "es",
-        "commander.sender": None,
+        "commander.address": None,
         "notification.sender": None,
+        "smtp.host": "localhost",
+        "smtp.port": 25,
         "log.file": None
     }
 
