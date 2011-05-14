@@ -27,10 +27,7 @@ from commands import Command
 from auth import PUBLIC_KEY
 
 class AuthException(Exception):
-    def __init__(self, msg, command):
-        Exception.__init__(self, msg)
-
-        self.command = command
+    pass
 
 class Commander:
     """
@@ -48,7 +45,7 @@ class Commander:
         if auth.authorized(command.id, authkey):
             output = command.execute(data)
         else:
-            raise AuthException("User not authorized to execute command", command)
+            raise AuthException("User not authorized to execute command")
 
         return output
 
