@@ -24,7 +24,8 @@ class DataParser:
         """
 
         self.__verify_delimiters(text)
-        splitted_text = re.split("<%|%>", text)
+        splitted_text = re.split("%s|%s" % (self.begin_delimiter, \
+                                 self.end_delimiter), text)
 
         data = []
 
@@ -42,8 +43,8 @@ class DataParser:
         return data
 
     def __verify_delimiters(self, lines):
-        begin_count = lines.count("<%")
-        end_count = lines.count("%>")
+        begin_count = lines.count(self.begin_delimiter)
+        end_count = lines.count(self.end_delimiter)
 
         if begin_count > 1 or end_count > 1:
             raise ParserException("Wrong number of delimiters provided")
@@ -78,7 +79,12 @@ class PropertiesParser(DataParser):
         Return a dictionary with information obtained from the given text
         """
 
+        # TODO: verify this is OK
+        if not text:
+            return {}
+
         lines = self.get_lines(text)
+
         read_lines = 0
         data = {}
         property_regex = re.compile("^([a-zA-Z](\w|-|\s)*):(.+)$")
@@ -92,10 +98,11 @@ class PropertiesParser(DataParser):
                 data[match.group(1).strip().lower()] = \
                      match.group(3).lstrip().rstrip()
 
-                read_lines += 1
             else:
                 raise ParserException("Invalid sintax at line %d: %s" \
                                        % (read_lines, line))
+
+            read_lines += 1
 
         return data
 
