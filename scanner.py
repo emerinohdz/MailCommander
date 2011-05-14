@@ -2,7 +2,8 @@
 
 import re
 
-from devpower.mail import UnicodeParser, unicode_email_body, extract_address
+from devpower.mail import unicode_email_body, extract_address
+from parser import PropertiesParser, ParserException
 from auth import AuthKey
 
 class ScannerException(Exception):
@@ -11,25 +12,53 @@ class ScannerException(Exception):
 
         self.cmd_id = cmd_id
 
+class Data(dict):
+    def __init__(self, data):
+        dict.__init__(self, data)
+
+        self.raw = None
+
 class MailScanner:
     """
-    Extract command id and its associated data from an email source
+    Extract command id, authkey and its associated data from an email 
     """
 
     def __init__(self, parsers=None):
         self.__parsers = parsers
+        self.__sprops_parser = PropertiesParser("<--", "-->")
 
-    def scan(self, email_source, parser=None):
-        if not email_source:
-            raise Exception("Email source is missing")
+    def scan(self, email, parser=None):
+        """
+        Return a tuple containing the following:
+        (cmd_id, data, sprops, authkey)
 
-        email = UnicodeParser().parsestr(email_source)
-        
+        where:
+            cmd_id = Command ID
+            data = Data for the command associated with cmd_id
+            sprops = System properties
+            authkey = The AuthKey for the command
+        """
+
+        if not email:
+            raise Exception("Email is missing")
+
         cmd_id = self.__get_command_id(email)
-        data = self.__get_data(cmd_id, email, parser)
-        authkey = self.__get_authkey(email, data)
 
-        return cmd_id, data, authkey
+        if not parser:
+            if self.__parsers != None:
+                parser = self.__parsers[cmd_id]
+            else:
+                raise ScannerException("Don't know how to parse data", cmd_id)
+
+        email_body = unicode_email_body(email)
+        data = self.__get_data(cmd_id, email_body, parser)
+        data.raw = self.__clean_email_body(email_body, parser.begin_delimiter,\
+                                           parser.end_delimiter, cmd_id)
+
+        sprops = self.__get_sprops(email_body)
+        authkey = self.__get_authkey(email, sprops)
+
+        return cmd_id, data, sprops, authkey
 
     def __get_command_id(self, email):
         cmd_id = None
@@ -50,21 +79,15 @@ class MailScanner:
 
         return cmd_id
 
-    def __get_data(self, cmd_id, email, parser):
-        if not parser:
-            if self.__parsers != None:
-                parser = self.__parsers[cmd_id]
-            else:
-                raise ScannerException("Don't know how to parse data", cmd_id)
-
+    def __get_data(self, cmd_id, email_body, parser):
         try:
-            data = parser.parse(unicode_email_body(email))
+            data = Data(parser.parse(email_body))
         except ParserException, err:
             raise ScannerException(err, cmd_id)
 
-        if len(data) == 0:
-            raise ScannerException("No hay datos para el comando '%s'" \
-                                      % (cmd_id), cmd_id)
+        if not data:
+            raise ScannerException("No data for command '%s'" \
+                                    % (cmd_id), cmd_id)
 
         return data
 
@@ -84,4 +107,22 @@ class MailScanner:
             return authkey
 
         return None
+
+    def __clean_email_body(self, body, start_delim, end_delim, cmd_id):
+        aux = re.split("%s|%s" % (start_delim, end_delim), body)[1]
+        body = ""
+
+        for line in aux.split("\n"):
+            # remove reply quotes
+            body += re.sub("^\s*>+", "", line).lstrip()
+
+        return start_delim + "\n" + body + "\n" + end_delim
+
+    def __get_sprops(self, email_body):
+        try:
+            data = self.__sprops_parser.parse(email_body)
+        except ParserException, err:
+            raise ScannerException(err, cmd_id)
+
+        return data
 
