@@ -5,7 +5,7 @@ It does so by parsing the data received in the body of the email and
 fetching the command from either the recipient of the email or the subject. 
 
 It includes a small API for commands implementation: Commands API.
-This small API has an authentication/authorization module, so commands 
+It also has an authentication/authorization module, so commands 
 can be validated first before actually executing them. 
 
 New commands may be added by placing them under the "cmds" folder
