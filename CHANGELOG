@@ -1,0 +1,16 @@
+v0.2
+16/May/2011
+
+* Created Commands API.
+* Created Notification API.
+* Created the scanner module to obtain the required
+  components to execute a command from an email
+  source.
+* Separated plugin information from the Commands API
+  using a configuration file for each command.
+
+
+v0.1
+05/May/2011
+
+* Initial release
