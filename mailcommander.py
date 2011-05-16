@@ -34,7 +34,7 @@ from scanner import MailScanner, ScannerException
 from commander import Commander, AuthException
 from notifications import EmailNotifier
 from util import Properties, Parsers, find_commands, \
-                 AuthoNotification, SuccessNotification
+                 AuthNotification, SuccessNotification
 
 def main():
     # Cofigure the system log
@@ -71,7 +71,7 @@ def main():
                                               auth_users, command, sprops))
     except AuthException, err:
         notifier.send(AuthNotification(cmd_id, conf["commander.address"], \
-                                       auth_users, email, data)
+                                       auth_users, email, data))
     except ScannerException, err:
         logging.error(str(err))
         sys.stderr.write(str(err))
