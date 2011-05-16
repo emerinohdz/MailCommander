@@ -33,3 +33,15 @@ by one).
 REQUERIMENTS:
 
 -> Cheetah templates http://www.cheetahtemplate.org
+
+
+USAGE:
+
+mailcommander.py <options>
+
+Available options:
+    -c, --config        path to configuration file 
+                        default: /etc/MailCommander/commander.conf
+    -h, --help          show this message
+
+The email source should be passed through stdin.
