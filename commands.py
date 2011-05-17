@@ -10,7 +10,7 @@ class Command:
     def __init__(self, id):
         self.__id = id
 
-    def init(config=None):
+    def init(self, config=None):
         """
         This method may be overriden in case additional configuration
         parameters wish to be passed externally to the command.
