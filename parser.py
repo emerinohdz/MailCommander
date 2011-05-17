@@ -17,6 +17,8 @@ class DataParser:
         self.begin_delimiter = begin_delimiter
         self.end_delimiter = end_delimiter
 
+        self.options = {}
+
     def get_lines(self, text):
         """
         Return a list with all the lines of the given text, without
