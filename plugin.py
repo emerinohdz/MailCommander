@@ -18,11 +18,14 @@ class PluginCommand:
         self.__command = command
         self.__rel_plugin_dir = cwd
         self.__abs_plugin_dir = os.getcwd() + "/" + cwd
-
+        
         self.__conf = None
         self.__parser = None
         self.__output_data = None
         self.__output = None
+
+        # Initialize command
+        self.__command.init()
 
     def execute(self, data):
         self.__output_data = self.__command.execute(data)
@@ -47,6 +50,9 @@ class PluginCommand:
 
                         if cmd == self.__command.id:
                             self.__conf[option] = v
+
+        # initialize command with parameters from configuration
+        self.__command.init(self.__conf)
 
         return self.__conf
 
