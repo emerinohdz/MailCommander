@@ -28,13 +28,13 @@ import logging
 import getopt
 
 from devpower.mail import UnicodeParser
+from devpower.util import Properties
 
 from auth import AuthManager, AuthKey, PUBLIC_KEY
 from scanner import MailScanner, ScannerException
 from commander import Commander, AuthException
 from notifications import EmailNotifier
-from util import Properties, Parsers, find_commands, \
-                 AuthNotification, SuccessNotification
+from util import Parsers, find_commands, AuthNotification, SuccessNotification
 
 def main():
     # Cofigure the system log
