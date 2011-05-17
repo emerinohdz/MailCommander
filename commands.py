@@ -12,7 +12,7 @@ class Command:
 
     def execute(self, data):
         """
-        Execute the command and return a data structure with the its output.
+        Execute the command and return a data structure with its output.
         """
 
         raise NotImplementedError
