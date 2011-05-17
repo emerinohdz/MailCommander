@@ -58,8 +58,32 @@ class DataParser:
         return line
         
 
-    def parse(self, text):
+    def parse_lines(self, line):
         raise NotImplementedError
+
+    def parse(self, text):
+        """
+        Return a dictionary with information obtained from the given text
+        """
+
+        # TODO: verify this is OK
+        if not text:
+            return {}
+
+        lines = self.get_lines(text)
+
+        current_line = 0
+        data = {}
+
+        while current_line < len(lines):
+            current_line = self.parse_lines(lines, current_line, data)
+
+            if not current_line:
+                raise ParserException("Invalid sintax at line %d: %s" \
+                                       % (read_lines, line))
+
+        return data
+
 
 # TODO: Support repeated properties
 class PropertiesParser(DataParser):
@@ -74,35 +98,20 @@ class PropertiesParser(DataParser):
     def __init__(self, begin_delimiter="<%", end_delimiter="%>"):
         DataParser.__init__(self, begin_delimiter, end_delimiter)
 
-    def parse(self, text):
-        """
-        Return a dictionary with information obtained from the given text
-        """
+        self.__regex = re.compile("^([a-zA-Z](\w|-|\s)*):(.+)$")
 
-        # TODO: verify this is OK
-        if not text:
-            return {}
+    # Parse key : value pairs
+    def parse_lines(self, lines, current_line, data):
+        line = lines[current_line]
+        match = self.__regex.search(line)
 
-        lines = self.get_lines(text)
+        if match:
+            data[match.group(1).strip().lower()] = \
+                 match.group(3).lstrip().rstrip()
 
-        read_lines = 0
-        data = {}
-        property_regex = re.compile("^([a-zA-Z](\w|-|\s)*):(.+)$")
+            current_line += 1
+        else:
+            current_line = None
 
-        # Parse key : value pairs
-        while read_lines < len(lines):
-            line = lines[read_lines]
-            match = property_regex.search(line)
-
-            if match:
-                data[match.group(1).strip().lower()] = \
-                     match.group(3).lstrip().rstrip()
-
-            else:
-                raise ParserException("Invalid sintax at line %d: %s" \
-                                       % (read_lines, line))
-
-            read_lines += 1
-
-        return data
+        return current_line
 
