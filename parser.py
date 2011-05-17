@@ -98,12 +98,12 @@ class PropertiesParser(DataParser):
     def __init__(self, begin_delimiter="<%", end_delimiter="%>"):
         DataParser.__init__(self, begin_delimiter, end_delimiter)
 
-        self.__regex = re.compile("^([a-zA-Z](\w|-|\s)*):(.+)$")
+        self.property_regex = re.compile("^([a-zA-Z](\w|-|\s)*):(.+)$")
 
     # Parse key : value pairs
     def parse_lines(self, lines, current_line, data):
         line = lines[current_line]
-        match = self.__regex.search(line)
+        match = self.property_regex.search(line)
 
         if match:
             data[match.group(1).strip().lower()] = \
