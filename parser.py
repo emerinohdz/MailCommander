@@ -81,8 +81,7 @@ class DataParser:
             current_line = self.parse_lines(lines, current_line, data)
 
             if not current_line:
-                raise ParserException("Invalid sintax at line %d: %s" \
-                                       % (current_line, line))
+                raise ParserException("Invalid sintax")
 
         return data
 
