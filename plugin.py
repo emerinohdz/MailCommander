@@ -3,7 +3,7 @@
 import os
 import re
 
-from devpower.util import Properties
+from devpower.util import Properties, find_classes
 from Cheetah.Template import Template
 
 from parser import DataParser, PropertiesParser
