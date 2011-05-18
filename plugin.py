@@ -17,7 +17,7 @@ class PluginCommand:
     def __init__(self, command, cwd):
         self.__command = command
         self.__rel_plugin_dir = cwd
-        self.__abs_plugin_dir = os.getcwd() + "/" + cwd
+        self.__abs_plugin_dir = os.path.dirname(__file__) + "/" + cwd
         
         self.__conf = None
         self.__parser = None
@@ -96,7 +96,8 @@ class PluginCommand:
         try:
             klass["k"] = eval(impl)
         except NameError, err:
-            find_classes(DataParser, self.__rel_plugin_dir, cls_found)
+            cwd = os.path.dirname(__file__)
+            find_classes(DataParser, self.__rel_plugin_dir, cwd, cls_found)
 
         if not klass["k"]:
             raise Exception("Parser not found: %s" % (impl))

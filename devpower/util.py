@@ -48,7 +48,7 @@ class Properties(dict):
 # ya que la ruta absoluta no se encuentra en sys.path.
 #
 # Además, para cada subclase que encuentra genera una instancia de la misma
-def find_classes(cls, subdir="", listener_func=None):
+def find_classes(cls, subdir="", root_path=None, listener_func=None):
     """
     Find all subclass of cls in py files located below path
     (does look in sub directories)
@@ -61,7 +61,8 @@ def find_classes(cls, subdir="", listener_func=None):
     @return: a list of instances that are subclasses of cls
     """
 
-    root_path = os.getcwd()
+    if not root_path:
+        root_path = os.getcwd()
 
     def look_for_subclass(modulename):
         module=__import__(modulename)

@@ -16,13 +16,15 @@ def find_commands(relative_path):
         command = klass()
 
         if command.id:
+            print cwd
             commands[command.id] = PluginCommand(command, cwd)
         else:
             raise Exception("Command id is missing")
 
         return True
 
-    find_classes(Command, relative_path, command_found)
+    cwd = os.path.dirname(__file__)
+    find_classes(Command, relative_path, cwd, command_found)
 
     return commands
 
