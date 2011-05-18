@@ -114,11 +114,10 @@ class MailScanner:
 
         for line in aux.split("\n"):
             # remove reply quotes
-            body += re.sub("^\s*>+", "", line).lstrip()
+            line = re.sub("^\s*>+", "", line).lstrip()
 
-            print body.strip()
-            if body.strip() != "\n":
-                body += "\n"
+            if line.strip():
+                body += line + "\n"
 
         return start_delim + "\n" + body + "\n" + end_delim
 
