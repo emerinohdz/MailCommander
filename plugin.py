@@ -14,10 +14,11 @@ class PluginCommand:
     output templates, without modifying the Commands API
     """
 
-    def __init__(self, command, cwd):
+    def __init__(self, command, cwd, home_dir):
         self.__command = command
         self.__rel_plugin_dir = cwd
         self.__abs_plugin_dir = os.path.dirname(__file__) + "/" + cwd
+        self.__commander_dir = home_dir
         
         self.__conf = None
         self.__parser = None
@@ -50,6 +51,16 @@ class PluginCommand:
 
                         if cmd == self.__command.id:
                             self.__conf[option] = v
+
+        local_config = self.__command.id + ".conf"
+
+        for root, dirs, files in os.walk(self.__commander_dir):
+            for name in files:
+                if name == local_config:
+                    props = Properties(root + "/" + name)
+
+                    for k, v in props.items():
+                        self.__conf[k] = v
 
         # initialize command with parameters from configuration
         self.__command.init(self.__conf)

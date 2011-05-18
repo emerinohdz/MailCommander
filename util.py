@@ -9,7 +9,7 @@ from commands import Command
 from plugin import PluginCommand
 from notifications import Notification
 
-def find_commands(relative_path):
+def find_commands(relative_path, home_dir):
     commands = {}
 
     def command_found(klass, cwd):
@@ -17,7 +17,7 @@ def find_commands(relative_path):
 
         if command.id:
             print cwd
-            commands[command.id] = PluginCommand(command, cwd)
+            commands[command.id] = PluginCommand(command, cwd, home_dir)
         else:
             raise Exception("Command id is missing")
 

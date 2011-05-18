@@ -37,19 +37,15 @@ from notifications import EmailNotifier
 from util import Parsers, find_commands, AuthNotification, SuccessNotification
 
 def main():
-    # Cofigure the system log
-    configure_log()
-
     try:
         # Load system configuration
         conf = parse_arguments()
 
         # Send logging output to a file if specified
-        if conf["log.file"]:
-            configure_log(conf["log.file"])
+        configure_log(conf["log.file"])
 
         # Look for available commands
-        commands = find_commands("cmds/")
+        commands = find_commands("cmds/", conf["home.dir"])
 
         # Core components
         auth = AuthManager(conf["home.dir"] + "/users.auth")
@@ -77,8 +73,8 @@ def main():
         sys.stderr.write(str(err))
         sys.exit(1) # Exit with err code 1 so the email is bounced
     except Exception, err:
-        import traceback
-        traceback.print_exc()
+        #import traceback
+        #traceback.print_exc()
         logging.error(str(err))
         usage()
 
