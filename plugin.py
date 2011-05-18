@@ -65,7 +65,7 @@ class PluginCommand:
         else:
             parser = PropertiesParser()
 
-        options_regex = re.compile("^parser\.options\.(\w+)$")
+        options_regex = re.compile("^parser\.options\.(.+)$")
 
         for key, value in self.conf.items():
             match = options_regex.search(key)
