@@ -82,7 +82,7 @@ class DataParser:
 
             if not current_line:
                 raise ParserException("Invalid sintax at line %d: %s" \
-                                       % (read_lines, line))
+                                       % (current_line, line))
 
         return data
 
