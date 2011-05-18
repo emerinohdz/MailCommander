@@ -138,7 +138,7 @@ def parse_arguments():
 
 def configure_log(filename=None):
     if filename:
-        logging.basicConfig(filename=conf["log.file"], \
+        logging.basicConfig(filename=filename, \
                             format="[%(asctime)s]: %(message)s", \
                             datefmt="%m/%d/%Y %I:%M:%S %p")
     else:
