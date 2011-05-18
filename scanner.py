@@ -116,7 +116,8 @@ class MailScanner:
             # remove reply quotes
             body += re.sub("^\s*>+", "", line).lstrip()
 
-            if line.strip() != "\n":
+            print body.strip()
+            if body.strip() != "\n":
                 body += "\n"
 
         return start_delim + "\n" + body + "\n" + end_delim
