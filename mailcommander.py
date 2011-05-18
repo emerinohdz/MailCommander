@@ -77,6 +77,8 @@ def main():
         sys.stderr.write(str(err))
         sys.exit(1) # Exit with err code 1 so the email is bounced
     except Exception, err:
+        import traceback
+        traceback.print_exc()
         logging.error(str(err))
         usage()
 
