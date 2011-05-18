@@ -55,7 +55,7 @@ class MailScanner:
         data.raw = self.__clean_email_body(email_body, parser.begin_delimiter,\
                                            parser.end_delimiter, cmd_id)
 
-        sprops = self.__get_sprops(email_body)
+        sprops = self.__get_sprops(email_body, cmd_id)
         authkey = self.__get_authkey(email, sprops)
 
         return cmd_id, data, sprops, authkey
@@ -121,7 +121,7 @@ class MailScanner:
 
         return start_delim + "\n" + body + "\n" + end_delim
 
-    def __get_sprops(self, email_body):
+    def __get_sprops(self, email_body, cmd_id):
         try:
             data = self.__sprops_parser.parse(email_body)
         except ParserException, err:
