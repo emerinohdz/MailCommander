@@ -2,6 +2,7 @@
 # 
 # Implementación de un archivo .properties
 
+import os
 
 class Properties(dict):
 
