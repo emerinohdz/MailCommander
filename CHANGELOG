@@ -1,3 +1,13 @@
+v0.3
+19/May/2011
+
+* Modified DataParser, creating new parsers should be easier now.
+* Parsers support options from command.conf.
+* Commands API: added optional configuration for commands.
+* Fixed logging to file bug.
+* Fixed CWD for commands.
+* Added local configuration support for commands from home.dir.
+
 v0.2
 16/May/2011
 
@@ -13,4 +23,4 @@ v0.2
 v0.1
 05/May/2011
 
-* Initial release
+* Initial release.
